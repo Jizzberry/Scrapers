@@ -1,8 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 
-from .. import Constants
-from ..DatabaseTools.db_tools_pornstars_list import add_items
+from Utils import Constants
+from Utils.DatabaseTools.db_tools_pornstars_list import add_items
 
 last_page = 1364
 
