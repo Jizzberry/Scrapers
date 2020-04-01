@@ -2,18 +2,23 @@ import requests
 from bs4 import BeautifulSoup
 
 from Utils import Constants
-from Utils.DatabaseTools.db_tools_pornstars_list import add_items
 
 
 def send_request(url):
     response = requests.post(url=url)
     soup = BeautifulSoup(response.text, "html.parser")
     f = soup.find("div", attrs={"id": "avidol"}).findAll("div", attrs={'class': 'itemBox'})
-    for item in f:
+    results_map = {}
+    for i, item in enumerate(f):
         box = item.find("a")
         actress = box['title']
         url_id = box['href'].split("/")[1]
-        add_items(name=actress, url_id=url_id, website=Constants.Type_xcity)
+        results_map.update({i: {
+            'actress':actress,
+            'url_id': url_id,
+            'website': Constants.Type_xcity
+        }})
+    return results_map
 
 
 def get_pageno(url):
@@ -24,6 +29,7 @@ def get_pageno(url):
 
 
 def populate_list():
+    results_map = {}
     search_sequence = {"あ": ["あ", "い", "う", "え", "お"],
                        "か": ["か", "き", "く", "け", "こ"],
                        "さ": ["さ", "し", "す", "せ", "そ"],
@@ -42,4 +48,6 @@ def populate_list():
 
             for i in range(1, int(page_no)):
                 url = "https://xxx.xcity.jp/idol/?kana=" + key + "&ini=" + item + "&num=90&page=" + str(i)
-                send_request(url)
+                results_map.update(send_request(url))
+
+    return results_map

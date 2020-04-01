@@ -4,7 +4,6 @@ import requests
 from bs4 import BeautifulSoup
 
 from Utils import Constants
-from Utils.DatabaseTools.db_tools_pornstars_list import add_items
 
 starter = "A"
 letter = "A"
@@ -13,6 +12,7 @@ blacklist = ["Special pages", "Boobpedia Copyright", "Privacy policy", "About Bo
 
 def send_request(url):
     global letter, starter
+    results_map = {}
     response = requests.post(url=url)
     soup = BeautifulSoup(response.text, "html.parser")
     f = soup.findAll("div", attrs={"class": "mw-category-group"})
@@ -24,15 +24,20 @@ def send_request(url):
                 starter = link.text
                 letter = starter[0]
 
-            print(link.text)
-            add_items(link.text, website=Constants.Type_Pornhub)
+            results_map.update({i: {
+                'actress': link.text,
+                'url_id': '',
+                'website': Constants.Type_Pornhub
+            }})
+    return results_map
 
 
 def populate_list():
     global letter, starter
+    results_map = {}
     while letter != "Z":
-        print("starter: "+starter)
         url = "http://www.boobpedia.com/wiki/index.php?title=Category:Porn_stars&pagefrom=" + starter + "#mw-pages"
-        send_request(url)
+        results_map.update(send_request(url))
+    return results_map
 
 
