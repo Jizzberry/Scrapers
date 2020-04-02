@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from Utils import Constants
 
 
-def send_request(url):
+def send_request(url, total_count):
     response = requests.post(url=url)
     soup = BeautifulSoup(response.text, "html.parser")
     f = soup.find("div", attrs={"id": "avidol"}).findAll("div", attrs={'class': 'itemBox'})
@@ -13,12 +13,13 @@ def send_request(url):
         box = item.find("a")
         actress = box['title']
         url_id = box['href'].split("/")[1]
-        results_map.update({i: {
+        results_map.update({total_count: {
             'actress':actress,
             'url_id': url_id,
             'website': Constants.Type_xcity
         }})
-    return results_map
+        total_count += 1
+    return total_count, results_map
 
 
 def get_pageno(url):
@@ -41,6 +42,7 @@ def populate_list():
                        "ら": ["ら", "り", "る", "れ", "ろ"],
                        "わ": ["わ"]
                        }
+    total_count = 0
     for key, value in search_sequence.items():
         for item in value:
             url = "https://xxx.xcity.jp/idol/?kana=" + key + "&ini=" + item + "&num=90"
@@ -48,6 +50,7 @@ def populate_list():
 
             for i in range(1, int(page_no)):
                 url = "https://xxx.xcity.jp/idol/?kana=" + key + "&ini=" + item + "&num=90&page=" + str(i)
-                results_map.update(send_request(url))
-
+                total_count, rmap = (send_request(url, total_count))
+                results_map.update(rmap)
     return results_map
+
