@@ -33,7 +33,4 @@ def populate_list():
         total_count, rmap = send_request(url, total_count)
         results_map.update(rmap)
         page += 1
-        print(results_map)
     return results_map
-
-populate_list()

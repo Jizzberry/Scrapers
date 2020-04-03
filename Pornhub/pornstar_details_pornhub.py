@@ -4,6 +4,7 @@ from urllib import request
 import requests
 from bs4 import BeautifulSoup, NavigableString
 
+from Utils import Constants
 from Utils.Configs.configParser import get_thumbnail_path
 from Utils.DatabaseTools.db_tools_pornstar_details import add_items
 
@@ -130,3 +131,6 @@ class Pornstars:
             if not data.count(None) == len(data):
                 add_items(scene_id, data[0], data[1], data[2], data[3], data[4], pid)
                 return True
+
+    def get_website_name(self):
+        return Constants.Type_Pornhub
